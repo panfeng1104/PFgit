@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="initial-scale=0.5, maximum-scale=0.5, user-scalable=no"  />
+       
+        <script type="text/javascript" src="zepto.js"></script>
+        <script type="text/javascript" src="md5.js"></script>
+        <script type="text/javascript" src="DPApp.js"></script>
+        <script type="text/javascript" src="DPAppControl.js"></script>
+        <script type="text/javascript">
+            var DPAppEnv = {
+            query: '${query}',
+            version: '${version}',
+            cityid: '${cityid}',
+            token: '${token}',
+            latitude: '${latitude}',
+            longitude: '${longitude}',
+            dpid: '${dpid}',
+            network: '${network}',
+            parseQuery: function () {
+            // query not set
+            if (DPAppEnv.query == '${query}') {
+            DPAppEnv.query = null;
+            return ;
+            }
+
+            var params = {};
+            DPAppEnv.query.split('&').forEach(function (param) {
+            var kv = param.split('=');
+            var k = kv[0];
+            var v = kv.length > 0 ? kv[1] : '';
+            params[k] = v;
+            });
+
+            DPAppEnv.query = params;
+            }
+            };
+            // parse query
+            (function () {
+            DPAppEnv.parseQuery();
+            })();
+        </script>
+        <link rel="stylesheet" type="text/css" href="tuanhome.css" />
+    </head>
+    <body>
+        <div id="main_loading_activitor2"></div>
+        <div id="main" style="display:;">
+            <div id="top-tab" class="tab-section top-fixed" style="display:none;">
+                <ul>
+                </ul>
+            </div>
+
+            <div id="home-categorylist" style="display:none;">
+            </div>
+            <div id = "home-operationlist" style="display:none;">
+            </div>
+
+            <!--
+            <div id="home-eventlist">
+                <table id="eventstable">
+                </table>
+            </div>-->
+           
+            <div id="home-recommendlist" style="display:none;">
+               
+                    <div class="tab-section">
+                        <ul>
+                        </ul>
+                    </div>
+               
+                <div id="recommends">
+                    <ul>
+                    </ul>
+                </div>
+                <div id="show-all">
+                </div>
+            </div>
+
+            <textarea style="display: none;" id="show_all_tpl">
+                <div class="show-all-deals">
+                    <div>查看更多团购</div>
+                    <div class="masker"></div>
+                    <div class="deal-seperator"></div>
+                </div>
+            </textarea>
+           <!--
+            <textarea style="display: none;" id="announce_tpl">
+                <li>
+                    <h3 class="title">${title}</h3>
+                    <h3 class="subtitle">${subTitle}</h3>
+                    <img src="${imageUrl}">
+                    <div class="masker"></div>
+                </li> 
+            </textarea>-->
+            <textarea style="display: none;" id="category_tpl">
+                <li class="category">
+                    <div class="content">
+                        <img src="${imageUrl}" style="display:none;">
+                        <span class="title">${title}</div>
+                        <div class="masker"></div> 
+                    </div>
+                </li>
+            </textarea>
+            <!--
+            <textarea style="display: none;" id="category_line_tpl">
+            <ul>  
+                <li>${1}</li>
+                <li>${2}</li>
+                <li>${3}</li>
+            </ul>
+            </textarea>-->
+            <textarea style="display:none" id="operation_tpl">
+                <div class="view">
+                    <div id="top">
+                        <div class="operation" id="top-left">
+                            <div class="descri">
+                               <div class="title">${title}</div>
+                               <div class="subtitle">${subTitle}</div>
+                            </div>
+                            <div class="masker"></div>
+                        </div>
+                        <div class="vertical-grey-line"></div>
+                        <div class="operation" id="top-mid">
+                            <div class="descri">
+                               <div class="title">${title}</div>
+                               <div class="subtitle">${subTitle}</div>
+                            </div>
+                            <div class="masker"></div>
+                        </div>
+                        <div class="vertical-grey-line"></div>
+                        <div class="operation">
+                            <div class="descri" id="top-right">
+                               <div class="title">${title}</div>
+                               <div class="subtitle">${subTitle}</div>
+                            </div>
+                            <div class="masker"></div>
+                        </div>
+                    </div>
+                    <div id="bottom" style="display:none;">
+                        <div id="left" class="operation">
+                            <div class="masker-oper">
+                                <div class="descri">
+                                 <div class="title">${title}</div>
+                                 <div class="subtitle">${subTitle}</div>
+                                </div>
+                            </div>
+                            <div class="masker"></div> 
+                       </div> 
+                          
+                        <div class="vertical-grey-line"></div>
+                        <div id="right" class="operation">
+                            <div class="masker-oper">
+                                <div class="descri">
+                                 <div class="title">${title}</div>
+                                 <div class="subtitle">${subTitle}</div>
+                                </div>
+                            </div>
+                            <div class="masker"></div>
+                        </div>        
+                    </div>
+                </div>
+            </textarea>
+            
+            <textarea style="display: none;" id="tabs_tpl">
+                <li>${0}</li>
+                <li>${1}</li>
+                <li>${2}</li>
+            </textarea>
+            <textarea id="deal_tpl" style="display:none;">
+                <li class="DPAppControl">
+                    <div class="deal">
+                        <div class="pic-box">
+                            <img src="${photo}">
+                            <div class="pic-masker">
+                            </div>
+                        </div>
+                        <div class="${tagleft}"></div>
+                        <!--
+                        <div class="${tag}"></div>-->
+                        <div class="info-deal-list">
+                            <div class="title-distance"><h3 class="title">${shortTitle}</h3><span class = "distance">${distancetext}</span></div>
+                            <div class="subtitle">${subtitle}</div>
+                            <div class = "tag-out">${tagOut}</div>
+                            <div class="price">
+                            <!--
+                                <span class="dollar">￥</span>-->
+                                <span class="now"><span class="dollar">￥</span><span class="value">${price}</span></span>
+                                <span class="real"><span class = "dollar">￥</span><span class = "value">${originalPrice}</span></span>
+                                <span class ="event_tag">${eventOne}</span><span class = "event_tag">${eventTwo}</span>
+                                <span class = "tag-new">今日新单</span>
+                                <span class = "sold-num">已售${count}</span>
+                                <!--
+                                <span class = "tag-recom">${totalReviewRecommend}</span>-->
+                            </div>
+                            <div class="fix"></div>
+                        </div>
+                        <!--
+                        <div class="recom-reason"><span class="reason">好吃好吃好吃</span></div>-->
+
+                        <div class="recom-reason">
+                            <div class="grey-oval-backg">
+                                <img src="tuan_deal_recom_grey@2x.png"></img>
+                                <span class="reason">${recommendReason}</span>
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                    <div class="deal-seperator">
+                    </div>
+                     <div class="masker"></div>
+                </li>
+            </textarea>
+            <textarea style="display:none;" id="hotEvent_tpl">
+                <li class="DPAppControl">
+                    <div class="hot_event">
+                        <div class="pic-box">
+                            <img src="${imageUrl}">
+                            <div class="pic-masker">
+                            </div>
+                        </div>
+                        <div class="info-hotevent-list">
+                            <h3 class="title">${title}</h3>
+                            <h3 class="subtitle">${subTitle}</h3>
+                        </div>
+                    </div>
+                    <div class="deal-seperator">
+                    </div>
+                </li>
+            </textarea>
+        </div>
+    </body>
+    <script type="text/javascript">
+        var recommendTask;
+        //var announceTask;
+        var categoryTask;
+        var homeeventsandadsTask;
+       // var eventsTask;
+        /*global params*/
+        var ga_tabindex;
+        var ga_tabstitle;
+
+
+        DPApp.startRefresh = function() {
+            refreshPage();
+        }
+
+        DPApp.onApplicationDidBecomeActive = function(){
+           // queryAnnounces();
+           queryCategorys();
+           if (new Date().getTime() - parseInt(localStorage.recommendsUpdateTime) > 1000 * 60 * 60) {
+               queryRecommends();
+           }
+        }
+
+        function refreshPage() {
+           // queryAnnounces();
+            queryCategorys();
+            queryHomeeventsandads();
+            //queryEvents();
+            queryRecommends();
+        }
+
+        function showMainPage() {
+            $('#main').show();
+            $('#main_loading_activitor').hide();
+            DPApp.stopRefresh();
+            
+            var pos = $('#home-recommendlist .tab-section').offset().top;
+            pos_tabs = pos;
+
+            console.log(pos, 257);
+            if (pos!=0) {
+                DPApp.monitorScrollTop(pos, function (direction) {
+                if ($('#home-recommendlist').css('display') != 'none') {
+                    if(direction == 'up'){
+                        $('#top-tab').show();
+                    }else if (direction == 'down') {
+                        $('#top-tab').hide();
+                    }
+                }
+            });
+            }
+            /*
+            DPApp.monitorScrollTop(pos, function (direction) {
+                if ($('#home-recommendlist').css('display') != 'none') {
+                    if(direction == 'up'){
+                        $('#top-tab').show();
+                    }else if (direction == 'down') {
+                        $('#top-tab').hide();
+                    }
+                }
+            });*/
+        }
+
+        function addParams2Url(url, key, value) {
+            return url + (url.indexOf('?') != -1 ? '&' : '?') + encodeURIComponent(key) + '=' + encodeURIComponent(value);
+        }
+
+/*begin category section js part*/
+if (true) {
+    queryCategorys();
+}
+function queryCategorys() {
+    DPApp.getEnv(function () {
+        try {
+            var cachelist = JSON.parse(localStorage['categorylist_' + DPAppEnv.cityid]);
+            showCategorylist(cachelist);
+        } catch (ignore) {}
+
+        categoryTask && categoryTask.cancel();
+        categoryTask = DPApp.ajax({
+            url: 'http://app.t.dianping.com/categorynavign.bin',
+            data: {
+                cityid: DPAppEnv.cityid,
+                token: DPAppEnv.token,
+                lat: DPAppEnv.latitude,
+                lng: DPAppEnv.longitude
+            },
+            modelName: "CellList",
+            cacheLocationScope: 1000000,
+            cacheType: DPApp.NVCacheTypeCritical,
+            success: function(clist) {
+                try {
+                    (clist && clist.list.length > 0) && (localStorage['categorylist_' + DPAppEnv.cityid] = JSON.stringify(clist));
+                } catch (ignore) {}
+                if (clist.list==null || clist.list.length == 0) {
+                     $('#home-categorylist').hide();
+                 }else {
+                    showCategorylist(clist);
+                 }
+            },
+            fail: function(code, msg) {
+                $('#main_loading_activitor').hide();
+                DPApp.stopRefresh();
+            }
+        });
+    });
+};
+var result_category;
+function showCategorylist(clist){
+    if (clist.list.length != 0) {
+        $('#home-categorylist').show();
+    }
+    result_category = clist;
+    $('#home-categorylist').html('');
+    var count_row = Math.ceil(clist.list.length/3);
+
+    for(var i = 1; i<=count_row; i++) {
+        var ul_node = document.createElement('ul');
+        for (var j = 1; j <= 3; j++) {
+            var index = (i-1)*3 + j - 1;
+            var category_tpl = document.querySelector('#category_tpl').value.trim();
+            var html = category_tpl.replace(/\$\{(.+?)\}/g, function($0, $1) {
+                if (index>= clist.list.length || clist.list[index][$1] == null || clist.list[index][$1] == undefined) {
+                    return '';
+                }else {
+                    return clist.list[index][$1];
+                }
+            });
+            $(ul_node).append(html);
+        }
+        $('#home-categorylist').append(ul_node);
+    }
+    var count = 3;
+    var width = $(window).width();
+    var border=1;
+    var w = Math.floor((width - 2 * border)/count);
+    $('#home-categorylist li').width(w + 'px');
+
+    var imgNodes = $('#home-categorylist li img');
+    imgNodes && imgNodes.forEach(function(item, index, arr){
+        if (index< clist.list.length && clist.list[index].imageUrl!=null && clist.list[index].imageUrl.length!=0 && clist.list[index].imageUrl != 'undefined') {
+            $(item).show();
+        }
+    }); 
+
+    var categoryNodes = $('#home-categorylist li');
+    categoryNodes && categoryNodes.forEach(function(item, index, arr) {
+        var node = new DPAppControl(item);
+            node.onClick = _click(item, index, arr);
+        function _click(item, index, arr) {
+                return function () {
+                var url;
+                var cellType = 0;
+                if (index < clist.list.length) {
+                    cellType = result_category.list[index].cellType;
+                }
+                var cell = result_category.list[index];
+                switch(cellType)
+                {
+                    case 3:
+                    url = 'dianping://web?url='+ encodeURIComponent(cell.extra.trim());
+                    break;
+                    case 4:
+                    url = cell.extra.trim();
+                    var title = 'category_'+cell.title;
+                    url = addParams2Url(url, 'gatitle', title);
+                    break;
+                }   
+                var label = cell.title;
+                DPApp.ga('tuan5', 'tuan5_home_category', label, 0, {'index':index});
+                DPApp.action.open(url);
+            }
+        }
+    });
+    showMainPage();
+}
+
+/*begin homeeventsandads js part*/
+if (true) {
+    queryHomeeventsandads();
+}
+
+function queryHomeeventsandads() {
+    DPApp.getEnv(function () {
+        try {
+            var cachelist = JSON.parse(localStorage['homeeventsandads_' + DPAppEnv.cityid]);
+            showHomeeventsandads(cachelist)
+        } catch (ignore) {}
+
+        homeeventsandadsTask && homeeventsandadsTask.cancel();
+        homeeventsandadsTask = DPApp.ajax({
+            url: 'http://app.t.dianping.com/homeeventsandadsgn.bin',
+            data: {
+                cityid: DPAppEnv.cityid,
+                token: DPAppEnv.token,
+                lat: DPAppEnv.latitude,
+                lng: DPAppEnv.longitude
+            },
+            modelName: "CellList",
+            cacheLocationScope: 1000000,
+            cacheType: DPApp.NVCacheTypeCritical,
+            success: function(clist) {
+                try {
+                    (clist && clist.list.length > 0) && (localStorage['homeeventsandads_' + DPAppEnv.cityid] = JSON.stringify(clist));
+                } catch (ignore) {}
+                if (clist.list==null || clist.list.length == 0) {
+                     $('#home-operationlist').hide();
+                 }else {
+                    showHomeeventsandads(clist);
+                 }
+            },
+            fail: function(code, msg) {
+                $('#main_loading_activitor').hide();
+                DPApp.stopRefresh();
+            }
+        });
+    });
+}
+
+function showHomeeventsandads(clist){
+    if (clist.list.length != 0) {
+        $('#home-operationlist').show();
+    }
+    console.log('home eventsandads show');
+    $('#home-operationlist').html('');
+    var num = 0;
+    var operation_tpl = document.querySelector('#operation_tpl').value.trim();
+    var html = operation_tpl.replace(/\$\{(.+?)\}/g, function($0, $1) {
+        num += 1;
+        var index = Math.floor((num - 1)/2);
+        if (index >= clist.list.length || clist.list[index][$1] == null || clist.list[index][$1] == undefined) {
+            return '';
+        }else {
+            return clist.list[index][$1];
+        }
+    });
+    
+    var dom = $(html);
+    if (clist.list.length >= 5) {
+        dom.find('#bottom').css('display','block');
+    }
+    
+    $('#home-operationlist').append(dom);
+     // debugger;
+    
+
+    var width = $(window).width();
+    var w_top = (width-2)/3;
+   // var w_bottom = (width - 1 - 2*35)/2;
+   var w_bottom = (width - 1)/2;
+    $('#home-operationlist #top .operation').width(w_top);
+    //$('#home-operationlist #bottom .masker-oper').width(w_bottom);
+   // w_bottom = (width - 1 - 2*35)/2;
+    $('#home-operationlist #bottom .operation').width(w_bottom);
+    /*
+    w_bottom = (width - 1 - 2*35)/2;*/
+    w_bottom = (width - 1 - 2*30)/2;
+    $('#home-operationlist #bottom .masker-oper').width(w_bottom);
+
+    var nodes = $('#home-operationlist .operation');
+    var bottomNodes = $('#home-operationlist #bottom .masker-oper');
+    if (clist.list.length>=5) {
+        bottomNodes && bottomNodes.forEach(function(item, index, arr){
+        var imageUrl = 'url("'+clist.list[index+3].imageUrl+'")';
+        $(item).css('background-image', imageUrl);
+        });
+    }
+    
+
+
+    nodes && nodes.forEach(function(item, index, arr){
+        var action;
+        if (index<3) {
+            var imageUrl = 'url("'+clist.list[index].imageUrl+'")';
+            $(item).css('background-image', imageUrl);
+            action = 'tuan5_home_banner'
+        }else {
+            action = 'tuan5_home_operation'
+        }
+    
+        var node = new DPAppControl(item);
+        node.onClick = _click(item, index, arr);
+        function _click(item, index, arr) {
+                return function () {
+                var url;
+                var cell = clist.list[index];
+                switch(cell.cellType) 
+                {
+                    case 3:
+                    url = 'dianping://web?url='+ encodeURIComponent(cell.extra.trim());
+                    break;
+                    case 4:
+                    url = cell.extra.trim();
+                   // url = addParams2Url(url, 'gatitle', title);
+                    break;
+                }   
+                var label = cell.title;
+                DPApp.ga('tuan5', action, label, 0, {'index':index, 'subtitle': cell.subTitle});
+                DPApp.action.open(url);
+            }
+        }
+    });
+}
+
+
+/*begin mid two events js part*/
+/*
+
+if (true) {
+    queryEvents();
+}
+function queryEvents() {
+    DPApp.getEnv(function () {
+        try {
+          //  var cacheev = JSON.parse(localStorage['ev_' + DPAppEnv.cityid]);
+            //showEvents(cacheev);
+        } catch (ignore) {}
+
+        eventsTask && eventsTask.cancel();
+        eventsTask = DPApp.ajax({
+            url: 'http://app.t.dianping.com/hotmodulegn.bin',
+            data: {
+                cityid: DPAppEnv.cityid,
+                token: DPAppEnv.token,
+                lat: DPAppEnv.latitude,
+                lng: DPAppEnv.longitude
+            },
+            modelName: "NVModelBaseCellList",
+            cacheLocationScope: 1000000,
+            cacheType: DPApp.NVCacheTypeCritical,
+            success: function(ev) {
+                try {
+                    (ev.list.length > 0) && (localStorage['ev_' + DPAppEnv.cityid] = JSON.stringify(ev));
+                } catch (ignore) {}
+                if (ev.list == null || ev.list.length == 0) {
+                    $('#home-eventlist').hide();
+                }else {
+                    $('#home-eventlist').show();
+                    showEvents(ev);
+                }
+            },
+            fail: function(code, msg) {
+                $('#main_loading_activitor').hide();
+            }
+        });
+    });
+};
+
+function showEvents(ev){
+
+    var tab = document.createElement('table');
+    $(tab).attr('id', 'eventstable');
+    $('#home-eventlist').html('');
+    $('#home-eventlist').append(tab);
+    var index = 0;
+    var row = Math.ceil(ev.list.length/2);
+    for (var i=0; i<row; i++)
+    {
+        var tr = document.createElement('tr');
+
+        for (var j=0; j<2 && index<ev.list.length; j++)
+        {
+            var td = document.createElement('td');
+            var divEvent = document.createElement('div');
+            $(divEvent).attr('class','event');
+            var divInfo = document.createElement('div');
+            $(divInfo).attr('class','info-eventlist');
+            var divTitle = document.createElement('div');
+            divTitle.innerHTML = (ev.list[index].title? ev.list[index].title: "");
+            $(divTitle).attr('class','title');
+            var divSubtitle = document.createElement('div');
+            divSubtitle.innerHTML = (ev.list[index].subTitle? ev.list[index].subTitle: "");
+            $(divSubtitle).attr('class','subtitle');
+            var divImage = document.createElement('div');
+            $(divImage).attr('class','event-img');
+
+
+            td.appendChild(divEvent);
+            divEvent.appendChild(divInfo);
+            divInfo.appendChild(divTitle);
+            divInfo.appendChild(divSubtitle);
+            divEvent.appendChild(divImage);
+            tr.appendChild(td);
+
+            var masker = document.createElement('div');
+            $(masker).addClass('masker');
+            td.appendChild(masker);
+
+            $(divEvent).css('background-image', 'url("' + ev.list[index].imageUrl + '")')
+            var c = new DPAppControl(td);
+            c.onClick = _click(ev.list[index], index);
+
+            function _click(cell, index) {
+                return function () {
+                    var urlType = cell.cellType;
+                    var url;
+                    switch(urlType)
+                    {
+                        case 3:
+                        url = 'dianping://web?url='+ encodeURIComponent(cell.extra.trim());
+                        break;
+                        case 4:
+                        url = cell.extra.trim();
+                        var title = 'operation_'+cell.title;
+                        url = addParams2Url(url, 'gatitle', title);
+                        break;             
+                    }
+                    var label = cell.title;
+                    DPApp.ga('tuan5', 'tuan5_home_operation', label, 0, {'index':index});
+                    DPApp.action.open(url);
+                }
+            }
+            index++; 
+
+        }
+        tab.appendChild(tr); 
+    }
+
+    var width = $(window).width();
+    $('#home-eventlist td').width(width/2 + 'px');
+
+    if (ev.list.length != 0) {
+        $('#home-eventlist').css('margin-top', 20 + 'px');
+    }
+    showMainPage();
+}*/
+
+/*begin rew recommends js part*/
+var dealgroup = {
+    photo : 'http://t3.s1.dpfile.com/pc/mc/89ea76ff6b645a2cbcb8dc554449cad3(160x100)/thumb.jpg',
+    title : '汉堡王',
+    subtitle: '[中山公园]单人餐，提供免费wifi, 精致美味，幸福滋味！提供免费wifi, 精致美味，幸福滋味！提供免费wifi, 精致美味，幸福',
+    price: '360',
+    originalPrice: '554',
+    distancetext: '100m'
+}
+if (true) {
+    queryRecommends();
+}
+function queryRecommends() {
+    DPApp.getEnv(function () {
+        try {
+            var cacherecom = JSON.parse(localStorage['recoms' + DPAppEnv.cityid]);
+            showRecommends(cacherecom);
+        } catch (ignore) {}
+        recommendTask && recommendTask.cancel();
+        recommendTask = DPApp.ajax({
+            url: 'http://app.t.dianping.com/homedownrecommendgn.bin',
+            data: {
+                cityid: DPAppEnv.cityid,
+                token: DPAppEnv.token,
+                dpid: DPAppEnv.dpid,
+                lat: DPAppEnv.latitude,
+                lng: DPAppEnv.longitude,
+                network: DPAppEnv.network
+            },
+            modelName: "RecommendDealList",
+            cacheLocationScope: 1000000,
+            cacheType: DPApp.NVCacheTypeCritical,
+            success: function(recoms) {
+                localStorage.recommendsUpdateTime = new Date().getTime();
+                try {
+                    (recoms.list.length > 0) && (localStorage['recoms' + DPAppEnv.cityid] = JSON.stringify(recoms));
+                } catch (ignore) {}
+                if (recoms.list == null || recoms.list.length == 0) {
+                    $('#home-recommendlist').hide();
+                }else {
+                    $('#home-recommendlist').show();
+                    showRecommends(recoms);
+                    var label = ga_tabindex + '|' + ga_tabstitle[ga_tabindex];
+                    DPApp.ga('tuan5', 'tuan5_home_switchtab', label, 0, 
+                        {'queryid':arr_queryIDs[ga_tabindex]
+                    });
+                }
+            },
+            fail: function(code, msg, recoms) {
+               // $('#home-recommendlist .show-all-deals').hide();  //有问题，会一直进入到fail????????
+                $('#main_loading_activitor').hide();
+            }
+        });
+    });
+};
+
+var hotevent = {
+    imageUrl : 'http://t3.s1.dpfile.com/pc/mc/89ea76ff6b645a2cbcb8dc554449cad3(160x100)/thumb.jpg',
+    title: '炎炎夏日夜宵强档',
+    subTitle: '深夜时分，美味刚刚开始，深夜时分，美味刚刚开始，深夜时分，美味刚刚开始'
+}
+
+var NVDealTagNoBooking = 0x01;
+var kNewDealStatusType = 0x01; 
+var kSellOutStatusType = 0x02;
+var kTimeOutStatusType = 0x04;
+var KNotPurchaseStatusType = 0x08;
+var kComingSoonStatusType = 0x10;
+var NVDealTagOnlineReservation = 256;
+
+
+
+var tabindex = 0;
+var result_recoms;
+var count_of_recoms;
+var pos_tabs;
+var title_of_tab_recom = new Array(3);
+var arr_queryIDs = new Array(3);
+function showRecommends(recoms){
+    var showAllLinks = new Array(3);
+    result_recoms = recoms;
+    var length = Math.ceil(recoms.list.length);
+    var tabstitle=new Array(3);
+    for(var i=0;i<recoms.list.length && i<3;i++){
+        tabstitle[i] = recoms.list[i].tabName;
+        showAllLinks[i] = recoms.list[i].moreUrl;
+        arr_queryIDs[i] = recoms.list[i].dealList.queryID;
+    }
+    title_of_tab_recom = tabstitle;
+    /*date prepare*/
+    /*tabs*/
+    $('#home-recommendlist .tab-section ul').html('');
+    $('#top-tab ul').html('');
+    var tabs_tpl = document.querySelector('#tabs_tpl').value.trim();
+    var html;
+    tabstitle && tabstitle.forEach(function() {
+        html = tabs_tpl.replace(/\$\{(.+?)\}/g, function($0, $1) {
+            return tabstitle[$1] || '';
+        });
+
+    });
+    $('#home-recommendlist .tab-section ul').append(html);
+    $('#top-tab ul').append(html);
+
+    var dom = $('#home-recommendlist .tab-section ul');
+    dom.find('li').removeClass('select');
+    dom.find('li').addClass('no-select');
+    $(dom.find('li').get(tabindex)).addClass('select');
+
+    dom = $('#top-tab ul');
+    dom.find('li').removeClass('select');
+    dom.find('li').addClass('no-select');
+    $(dom.find('li').get(tabindex)).addClass('select');
+
+    $('.tab-section').each(function (i, section) {
+        $(section).find('li').each(function (index, li) {
+            var control = new DPAppControl(li);
+
+            control.onClick = function () {
+                onTabItemClick(index);         
+                updateRecommendList(index);               
+                if ($('#top-tab').css('display') == 'block') {
+                    $('body').scrollTop(pos_tabs);
+                    $('#top-tab').show();
+                }
+           }
+        });
+    });
+
+    function onTabItemClick(index) {
+        $('.tab-section li').removeClass('select').addClass('no-select');
+        $('.tab-section').each(function (i, section) {
+            $($(section).find('li').get(index)).addClass('select');
+        })
+        tabindex = index;
+        var label = index + '|' + tabstitle[index];
+        DPApp.ga('tuan5', 'tuan5_home_switchtab', label, 0, 
+                        {'queryid':arr_queryIDs[index]
+                        });
+    }
+    ga_tabindex = tabindex;
+    ga_tabstitle = tabstitle;
+    updateRecommendList(tabindex);
+
+    /*显示查看全部*/
+    $('#home-recommendlist #show-all').html('');
+    if (count_of_recoms>0) {
+        var showAll_tpl = document.querySelector('#show_all_tpl').value.trim();
+        $('#home-recommendlist #show-all').append(showAll_tpl);
+        //$('#home-recommendlist .show-all-deals').show();
+        var c = new DPAppControl($('#home-recommendlist .show-all-deals'));
+        c.onClick = function() {
+            DPApp.action.open(showAllLinks[tabindex].trim());
+        }
+    }
+    showMainPage();
+}
+var recommendResults;
+var deallist;
+var eventlist;
+function updateRecommendList(index){
+    recommendResults = result_recoms.list[index];
+    deallist = recommendResults.dealList.list;
+    eventlist = recommendResults.dealList.hotEvents;
+   // var count = deallist.length + eventlist.length;
+    var count_eventlist = (eventlist == null)? 0 : eventlist.length;
+    var count_deallist = (deallist == null)? 0 : deallist.length;
+    count_of_recoms = count_eventlist + count_deallist;
+
+    var num = deallist.length + eventlist.length;
+    var h_recom = $('#home-recommendlist #recommends ul li').height();
+    if (h_recom != null && h_recom != 'undefined') {
+        var n = 0;
+        deallist && deallist.forEach(function(item, index, arr){
+            if (item.recommendReason != null && item.recommendReason != 'undefined' && item.recommendReason.length!=0){
+                n++;
+            }
+        });
+        h_recom = 202;
+        var h_recoms = num * h_recom + n * 52;
+        $('#home-recommendlist #recommends ul').css('height',h_recoms);
+    }
+    $('#home-recommendlist #recommends ul').html('');
+
+    var hotevent_tpl = document.querySelector('#hotEvent_tpl').value.trim();
+    eventlist && eventlist.forEach(function(e) {
+        var html = hotevent_tpl.replace(/\$\{(.+?)\}/g, function($0, $1) {
+            return e[$1] || '';
+        });
+        $('#home-recommendlist #recommends ul').append(html);
+    });
+
+    var deal_tpl = document.querySelector('#deal_tpl').value.trim();
+    deallist && deallist.forEach(function(deal) {
+        deal.subtitle = deal['dealTitlePrefix'] + deal['dealTitle'];
+        computeDistance(deal);
+        deal.distancetext = distancetext;
+
+        if (deal.eventList!= null) {
+            var length = deal.eventList.length;
+            deal.eventOne = (length>0)? deal.eventList[0].shortTitle: '';
+            deal.eventTwo = (length>1)? deal.eventList[1].shortTitle: '';
+        }
+        var className = '';
+        if (deal.tag & NVDealTagNoBooking) {
+         className = 'tag-mianyuyue';
+        }
+        if (deal.dealType == 3) {
+            className = 'tag-lottery';
+        }
+        if (deal.tag & NVDealTagOnlineReservation) {
+            className = 'tag-online-booking';
+        }
+
+        if (deal.status & kSellOutStatusType) {
+            deal.tagOut = '已售完';
+        } else if (deal.status & kTimeOutStatusType) {
+            deal.tagOut = '已结束';
+        }
+                                 
+        deal.tagleft = className;
+
+        var html = deal_tpl.replace(/\$\{(.+?)\}/g, function($0, $1) {
+            if (deal[$1] === null || deal[$1] === undefined) {
+                return '';
+            }
+            return deal[$1];
+        });
+        var dom = $(html);
+        //dom.find('.subtitle').html(deal['dealTitlePrefix'] + deal['dealTitle']);
+        //dom.find('.event_tag').first().css('border-color', 'red');
+        if (deal.eventList!=null && deal.eventList.length >0) {
+            //dom.find('.real').css('display','none');
+            var c = deal.eventList[0].color;
+            dom.find('.event_tag').first().css('border-color', addAlpha2Color(c, 0.7));
+            dom.find('.event_tag').first().css('color',c);
+            dom.find('.event_tag').first().show();
+            dom.find('.event_tag').first().css('display','');
+            if (deal.eventList.length>=2) {
+                var c1 = deal.eventList[1].color;
+                dom.find('.event_tag').last().css('border-color', addAlpha2Color(c1, 0.7));
+               // dom.find('.event_tag').last().css('border-color',c1);
+                dom.find('.event_tag').last().css('color',c1);
+                dom.find('.event_tag').first().css('display','');
+                dom.find('.event_tag').last().show();
+            }else {
+                //dom.find('.event_tag').last().css('display','none');
+                dom.find('.event_tag').last().hide();
+            }
+        }else {
+            dom.find('.event_tag').hide();
+        }
+        /*
+        if (!(deal.status & kNewDealStatusType)) {
+            dom.find('.tag-new').hide();
+        }else {
+            dom.find('.tag-recom').hide();      
+        }*/
+        if (!(deal.status & kNewDealStatusType)) {
+            dom.find('.tag-new').hide();
+        }
+        if (deal.count == 0 || (deal.status & kNewDealStatusType)) {
+            dom.find('.sold-num').hide();
+        }
+        /*
+        if (deal.totalReviewRecommend == null || deal.totalReviewRecommend.length == 0) {
+            dom.find('.tag-recom').hide();
+        }*/
+
+        if (deal.recommendReason == null || deal.recommendReason.length == 0 || deal.recommendReason == 'undefined') {
+            dom.find('.recom-reason').hide();
+        }
+
+        $('#home-recommendlist #recommends ul').append(dom);
+        if (deal.eventList!=null && deal.eventList.length >0) {
+            //var arr = dom.find('.price span');
+            var prority_arr = new Array();
+            prority_arr.push(dom.find('.price .event_tag'));
+            prority_arr.push(dom.find('.price .real'));
+            prority_arr.push(dom.find('.price .tag-new'));
+            prority_arr.push(dom.find('.price .sold-num'));
+            for (var i = prority_arr.length -1; i >=0; i--) {
+                var w = dom.find('.price').first().width();
+                var h = dom.find('.price').first().height();
+                var t_price = dom.find('.price').first().offset().top;
+                var max_top = t_price + h;
+                var t = $(prority_arr[i]).offset().top;
+                /*
+                if (w>380 || h>50 || t> max_top) {
+                    $(arr[i]).hide();
+                }*/
+                /*
+                console.log('index='+i);
+                console.log('h='+h);
+                console.log('t='+t);
+                console.log('max_top='+max_top);*/
+                if (h>53 || t>= max_top) {
+                    $(prority_arr[i]).hide();
+                }
+            }
+        }
+
+        if ((deal.status & kSellOutStatusType) || (deal.status & kTimeOutStatusType)) {
+            dom.find('.price').hide();
+            dom.find('.distance').hide();
+        }
+    });
+    var recommendNodes = $('#home-recommendlist #recommends li');
+    recommendNodes && recommendNodes.forEach(function(item, index, arr) {
+        var dom = $(item);
+        var h = dom.find('.subtitle').height();
+        if (h<=34) {
+            dom.find('.info-deal-list').addClass('two-line');
+        }
+
+        var node = new DPAppControl(item);
+            node.onClick = _click(item, index, arr);
+        function _click(item, index, arr) {
+                return function () {
+                var url;
+                var recom;
+                if (index<count_eventlist) {
+                    recom = eventlist[index];
+                }else {
+                    recom = deallist[index - count_eventlist];
+                }
+                var id = recom.uid;
+                if (index>=0 && index<count_eventlist) {
+                    //event  
+                    switch(eventlist[index].cellType)
+                    {
+                        case 3:
+                        url = 'dianping://web?url='+ encodeURIComponent(eventlist[index].extra.trim());
+                        break;
+                        case 4:
+                        url = eventlist[index].extra.trim();
+                        break;
+                    }
+                }else {
+                    //deal
+                    url = 'dianping://tuandeal?id='+ deallist[index-count_eventlist].uid;
+                }
+                
+                if (index<count_eventlist) {
+                    var label = title_of_tab_recom[tabindex];
+                    DPApp.ga('tuan5', 'tuan5_home_recdeal_banner', label, 0,
+                        {'index':index,
+                        'operationtitle': recom.title,
+                        'queryid': arr_queryIDs[0],
+                        'tabindex': tabindex
+                    });
+                }else {
+                    switch(tabindex)
+                    {
+                        case 0:
+                        DPApp.ga('tuan5', 'tuan5_home_recdeal_0', title_of_tab_recom[tabindex], 0,
+                            {'index':index,
+                            'dealgroupid': recom.uid,
+                            'queryid': arr_queryIDs[0]
+                        });
+                        break;
+                        case 1:
+                        DPApp.ga('tuan5', 'tuan5_home_recdeal_1', title_of_tab_recom[tabindex], 0,
+                            {'index':index,
+                            'dealgroupid': recom.uid,
+                            'queryid': arr_queryIDs[1]
+                        });
+                        break;
+                        case 2:
+                        DPApp.ga('tuan5', 'tuan5_home_recdeal_2', title_of_tab_recom[tabindex], 0,
+                            {'index':index,
+                            'dealgroupid': recom.uid,
+                            'queryid': arr_queryIDs[2]
+                        });
+
+                        break;
+                    }
+
+                }
+
+                DPApp.action.open(url);
+                }
+            }
+    });
+}
+
+// #FF00FF
+function addAlpha2Color(color, alpha) {
+    color = color.replace(/#/g, '');
+    if (color.length != 6) return ;
+    var r = parseInt(color.substr(0, 2), 16);
+    var g = parseInt(color.substr(2, 2), 16);
+    var b = parseInt(color.substr(4, 2), 16);
+
+    return ['rgba(', r, ',', g, ',', b, ',', alpha, ')'].join('');
+}
+
+function computeDistance(deal){
+    var MPI = 3.14159265358979323846264338327950288;
+    var lat1 = DPAppEnv.latitude / 180.0 * MPI;
+    var lon1 = DPAppEnv.longitude / 180.0 * MPI;
+    var lat2 = deal.latitude / 180.0 * MPI;
+    var lon2 = deal.longitude / 180.0 * MPI;
+    if (lat2!=0 && lon2!=0 && lat1!=0 && lat2!=0) {
+        var dlat = lat2 - lat1;
+        var dlon = lon2 - lon1;
+        var a = Math.sin(dlat / 2.0) * Math.sin(dlat / 2.0) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon / 2.0) * Math.sin(dlon / 2.0);
+        var c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
+        var distance = 6371000 * c;
+
+
+        var distanceFactor = 0;
+        var factor = 0;
+        if(distanceFactor == 0) {
+            distanceFactor = factor > 0 ? factor : 1;
+        }
+        distance *= distanceFactor; 
+        NVFormatDistance(distance);
+    }else {
+        distancetext = "";
+    }
+
+}
+
+var distancetext = "";
+function NVFormatDistance(distance){
+    if (distance > 0) {
+        var i = Math.round(distance / 10.0) * 10;
+        if (i < 100) {
+            distancetext = "<100m";
+        } else if (i < 1000) {
+            distancetext = i + 'm';
+        } else if (i <10000) {
+            var x = parseFloat(i/1000.0);  
+            var d = Math.round(x*10)/10;  
+            //var d = i / 1000.0;
+            distancetext = d + 'km';
+        } else if (i < 100000){
+            //var j = Math.round(i/1000*10)/10;
+            var j = Math.round(i/1000);
+            distancetext = j +'km';
+        } else {
+            distancetext = "";
+        }
+    } else {
+        distancetext = "";
+    }
+}
+/*
+DPApp.monitorScrollTop(300, function () {
+
+});*/
+
+
+</script>
+    </html>
